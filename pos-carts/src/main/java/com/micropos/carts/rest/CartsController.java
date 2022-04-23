@@ -33,7 +33,7 @@ public class CartsController implements CartApi {
     public ResponseEntity<CartDto> addToCart(String productId) {
         if (cart == null) cart = new Cart();
         cartsService.add(cart, productId, 1);
-        return  new ResponseEntity<>(cartsMapper.toCartDto(cart), HttpStatus.OK);
+        return new ResponseEntity<>(cartsMapper.toCartDto(cart), HttpStatus.OK);
     }
 
     @Override

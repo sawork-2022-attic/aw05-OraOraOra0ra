@@ -29,6 +29,7 @@ public class JDRepository implements ProductRepository {
         return products;
     }
 
+    @Cacheable(value="pos-products", key="#productId")
     @Override
     public Product findProduct(String productId) {
         for (Product p : allProducts()) {

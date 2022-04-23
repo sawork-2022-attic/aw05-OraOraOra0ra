@@ -27,15 +27,17 @@ public class CartsServiceImpl implements CartsService, Serializable {
 
     @Override
     public Cart add(Cart cart, String productId, int amount) {
-        CircuitBreaker cB = factory.create("circuitbreaker");
-        return cB.run(()->{
-                    ResponseEntity<Product> productResponseEntity = restTemplate.
-                            getForEntity("http://pos-carts/api/cart/add/" + productId, Product.class);
-                    Product product = productResponseEntity.getBody();
-                    if (product == null) return cart;
-                    cart.addItem(new Item(product, amount));
-                    return cart;
-                },throwable-> cart
-        );
+        CircuitBreaker cb = factory.create("circuitbreaker");
+        return cb.run(() -> {
+            ResponseEntity<Product> productResponseEntity = restTemplate.
+                    getForEntity("http://pos-products/api/products/" + productId, Product.class);
+            Product product = productResponseEntity.getBody();
+            if (product == null) return cart;
+            cart.addItem(new Item(product, amount));
+            return cart;
+        }, ex -> {
+            cart.addItem(new Item(new Product(productId, "故障", 0, ""), amount));
+            return cart;
+        });
     }
 }
